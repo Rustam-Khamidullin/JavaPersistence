@@ -7,12 +7,10 @@ import java.util.stream.Collectors;
 public class Jsonolizer {
 
     public String objToJson(Object o) {
-        String json = "{";
-
         Class<?> clazz = o.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
-        json += Arrays.stream(fields)
+        return Arrays.stream(fields)
                 .map(field -> {
                     field.setAccessible(true);
 
@@ -24,9 +22,7 @@ public class Jsonolizer {
                     }
 
                     return "\"" + field.getName() + "\": " + objToJsonField(value);
-                }).collect(Collectors.joining(", "));
-
-        return json + "}";
+                }).collect(Collectors.joining(", ", "{", "}"));
     }
 
     public String objToJsonField(Object o) {
