@@ -1,0 +1,35 @@
+package org.example;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class Jsonolizer {
+
+    public String objToJson(Object o) {
+        String json = "{";
+
+        Class<?> clazz = o.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        json += Arrays.stream(fields)
+                .map(field -> {
+                    field.setAccessible(true);
+
+                    Object value;
+                    try {
+                        value = field.get(o);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Can't get value from field" + field.getName(), e);
+                    }
+
+                    return "\"" + field.getName() + "\": " + objToJsonField(value);
+                }).collect(Collectors.joining(", "));
+
+        return json + "}";
+    }
+
+    public String objToJsonField(Object o) {
+        return o.toString();
+    }
+}
