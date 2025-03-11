@@ -1,10 +1,17 @@
 package org.example;
 
+import java.util.HashMap;
+
 public class Main {
     public static void main(String[] args) {
+        Simple s = new Simple();
+        s.string = new String[] {"string", "string2"};
+        s.value = new int[] {43};
+
         Simple example = new Simple();
-        example.string = "str";
-        example.value = 42;
+        example.string = new String[] {"str"};
+        example.value = new int[] {42, 43};
+        example.simple = s;
 
         Jsonolizer jsonlizer = new Jsonolizer();
         System.out.println(jsonlizer.objToJson(example));
@@ -17,7 +24,8 @@ public class Main {
 
 
     public static class Simple {
-        public int value;
-        public String string;
+        public int[] value;
+        public String[] string;
+        public Simple simple;
     }
 }
