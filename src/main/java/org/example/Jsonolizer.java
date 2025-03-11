@@ -24,9 +24,7 @@ public class Jsonolizer {
     }
 
     public String objToJson(Object o) {
-        Class<?> clazz = o.getClass();
-
-        if (clazz.isPrimitive() || simpleClasses.contains(clazz)) {
+        if (isSimpleObject(o)) {
             throw new IllegalArgumentException("Can't serialize simple object.");
         }
 
