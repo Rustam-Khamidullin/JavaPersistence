@@ -2,9 +2,6 @@ package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,14 +60,62 @@ public class JsonolizerTest {
 	}
 
 	@Test
-	public void integerObject() {
-		OneFieldClass classForTest = new OneFieldClass(null);
-		System.out.println(jsonolizer.objToJson(classForTest));
-
+	public void nullField() {
+		assertEquals("{\"val\": null}", jsonolizer.objToJson(new OneFieldClass(null)));
 	}
 
+	@Test
+	public void integerFields() {
+		//integer
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OneFieldClass(42)));
+		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OneFieldClass(-1000)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OneFieldClass(0)));
+		//byte
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OneFieldClass((byte)42)));
+		assertEquals("{\"val\": -100}", jsonolizer.objToJson(new OneFieldClass((byte)-100)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OneFieldClass((byte)0)));
+		//short
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OneFieldClass((short)42)));
+		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OneFieldClass((short)-1000)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OneFieldClass((short)0)));
+		//long
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OneFieldClass(42L)));
+		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OneFieldClass(-1000L)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OneFieldClass(0L)));
+	}
 
+	@Test
+	public void fractionFields() {
+		//double
+		assertEquals("{\"val\": 22.1234567}", jsonolizer.objToJson(new OneFieldClass(22.1234567)));
+		assertEquals("{\"val\": 0.0}", jsonolizer.objToJson(new OneFieldClass(0.0)));
+		assertEquals("{\"val\": -22.1234567}", jsonolizer.objToJson(new OneFieldClass(-22.1234567)));
+		//float
+		assertEquals("{\"val\": 22.123}", jsonolizer.objToJson(new OneFieldClass((float)22.123)));
+		assertEquals("{\"val\": 0.0}", jsonolizer.objToJson(new OneFieldClass((float)0.0)));
+		assertEquals("{\"val\": -22.123}", jsonolizer.objToJson(new OneFieldClass((float)-22.123)));
+	}
 
+	@Test
+	public void booleanFields() {
+		assertEquals("{\"val\": true}", jsonolizer.objToJson(new OneFieldClass(true)));
+		assertEquals("{\"val\": false}", jsonolizer.objToJson(new OneFieldClass(false)));
+	}
 
+	//TODO fix that
+	@Test
+	public void stringFields() {
+		assertEquals("{\"val\": \"string\"}", jsonolizer.objToJson(new OneFieldClass("string")));
+		assertEquals("{\"val\": \"\"}", jsonolizer.objToJson(new OneFieldClass("")));
+		assertEquals("{\"val\": \"t\"}", jsonolizer.objToJson(new OneFieldClass(Character.valueOf('t'))));
+		assertEquals("{\"val\": \"п\"}", jsonolizer.objToJson(new OneFieldClass(Character.valueOf('п'))));
+		assertEquals("{\"val\": \"t\"}", jsonolizer.objToJson(new OneFieldClass('t')));
+		assertEquals("{\"val\": \"п\"}", jsonolizer.objToJson(new OneFieldClass('п')));
 
+		/**
+		 * На это я думаю забить можно, служебные символы не так нужно видеть зрительно,
+		 * в gson реализовано также как в этом тесте, что служебные символы через unicode \\u отображаются
+		 **/
+		assertEquals("{\"val\": \"\u0003\"}", jsonolizer.objToJson(new OneFieldClass((char)3)));
+	}
 }
