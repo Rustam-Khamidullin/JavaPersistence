@@ -24,7 +24,7 @@ public class Jsonolizer {
     }
 
     public String objToJson(Object o) {
-        if (isSimpleObject(o)) {
+        if (o == null || isSimpleObject(o)) {
             throw new IllegalArgumentException("Can't serialize simple object.");
         }
 
@@ -50,7 +50,7 @@ public class Jsonolizer {
     }
 
     public String simpleToJson(Object o) {
-        if (o instanceof String) {
+        if (o instanceof String || o instanceof Character) {
             return "\"" + o + "\"";
         }
 
@@ -62,7 +62,7 @@ public class Jsonolizer {
             StringBuilder res = new StringBuilder("[");
             int length = Array.getLength(o);
             for (int i = 0; i < length; i++) {
-                res.append(Array.get(o, i));
+                res.append(objToJsonField(Array.get(o, i)));
                 if (i != length - 1) {
                     res.append(", ");
                 }
