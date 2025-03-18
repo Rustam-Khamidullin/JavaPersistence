@@ -100,6 +100,52 @@ public class Jsonolizer {
         return clazz.isPrimitive() || simpleClasses.contains(clazz);
     }
 
+    /// /////////
+    public Object jsonToObj(String json, Class<?> clazz) {
+        if (simpleClasses.contains(clazz) || clazz.isPrimitive()) {
+            return simpleObjectFromJson(json, clazz);
+        }
+        if (clazz.isArray()) {
+            //TODO json to array
+            return null;
+        }
+        return null; //TODO json to complex object
+    }
+
+    private Object simpleObjectFromJson(String json, Class<?> clazz) {
+        if (clazz == String.class) {
+            return json.substring(1, json.length() - 1); //bring string without "
+        }
+        if (clazz == Boolean.class || clazz == boolean.class) {
+            return Boolean.parseBoolean(json);
+        }
+        if (clazz == Character.class || clazz == char.class) {
+            return json.charAt(1);
+        }
+        if (clazz == Byte.class || clazz == byte.class) {
+            return Byte.parseByte(json);
+        }
+        if (clazz == Short.class || clazz == short.class) {
+            return Short.parseShort(json);
+        }
+        if (clazz == Integer.class || clazz == int.class) {
+            return Integer.parseInt(json);
+        }
+        if (clazz == Long.class || clazz == long.class) {
+            return Long.parseLong(json);
+        }
+        if (clazz == Float.class || clazz == float.class) {
+            return Float.parseFloat(json);
+        }
+        if (clazz == Double.class || clazz == double.class) {
+            return Double.parseDouble(json);
+        }
+        if (clazz == Void.class) {
+            return null;
+        }
+        throw new IllegalArgumentException("Method \"simpleObjectFromJson\" can convert only simple objects");
+    }
+
     public static void main(String[] args) {
         String[][] a = new String[][]{{"a"}, {"b", "c"}};
 

@@ -147,4 +147,39 @@ public class JsonolizerTest {
 		assertEquals("{\"arr\": [\"a\", \"b\", 1, 2, 1.0, 2.0, true, false, null]}", jsonolizer.objToJson(o));
 	}
 
+
+	@Test
+	public void simpleObjectsFromJson() {
+		/*string*/
+        assertEquals("string", (String) jsonolizer.jsonToObj("\"string\"", String.class));
+		/*boolean*/
+		assertEquals(Boolean.valueOf(true), (Boolean) jsonolizer.jsonToObj("true", Boolean.class));
+		assertEquals(Boolean.valueOf(false), (Boolean) jsonolizer.jsonToObj("false", Boolean.class));
+		assertEquals(true, (boolean) jsonolizer.jsonToObj("true", boolean.class));
+		assertEquals(false, (boolean) jsonolizer.jsonToObj("false", boolean.class));
+		/*char*/
+		assertEquals('r', (Character) jsonolizer.jsonToObj("\"r\"", Character.class));
+		assertEquals('п', (Character) jsonolizer.jsonToObj("\"п\"", Character.class));
+		/*byte*/
+		assertEquals(Byte.valueOf((byte)5), (Byte) jsonolizer.jsonToObj("5", Byte.class));
+		assertEquals((byte)5, (byte) jsonolizer.jsonToObj("5", byte.class));
+		/*short*/
+		assertEquals((short)5, (Short) jsonolizer.jsonToObj("5", Short.class));
+		assertEquals((short)5, (short) jsonolizer.jsonToObj("5", short.class));
+		/*integer*/
+		assertEquals(5, (Integer) jsonolizer.jsonToObj("5", Integer.class));
+		assertEquals(5, (int) jsonolizer.jsonToObj("5", int.class));
+		/*long*/
+		assertEquals(5, (Long) jsonolizer.jsonToObj("5", Long.class));
+		assertEquals(5, (long) jsonolizer.jsonToObj("5", long.class));
+		/*double*/
+		assertEquals(Double.valueOf(5.0), (Double) jsonolizer.jsonToObj("5.0", Double.class));
+		assertEquals((double)5.0, (double) jsonolizer.jsonToObj("5.0", double.class));
+		/*float*/
+		assertEquals(Float.valueOf(5.0F), (Float) jsonolizer.jsonToObj("5.0", Float.class));
+		assertEquals(5.0F, (float) jsonolizer.jsonToObj("5.0", float.class));
+		/*void*/
+        assertNull(jsonolizer.jsonToObj("null", Void.class));
+	}
+
 }
