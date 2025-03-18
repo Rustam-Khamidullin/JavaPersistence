@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Jsonolizer {
     static private final Set<Class<?>> simpleClasses = new HashSet<>();
+    private SerializationContext ctx;
 
     static {
         simpleClasses.add(Boolean.class);
@@ -28,6 +29,7 @@ public class Jsonolizer {
             throw new IllegalArgumentException("Can't serialize simple object.");
         }
 
+        ctx = new SerializationContext();
         return objToJsonField(o);
     }
 
@@ -77,10 +79,19 @@ public class Jsonolizer {
     }
 
     private String realObjToJson(Object o) {
+        Long id = ctx.getId(o);
+        if (id != null) {
+            return id.toString();
+        }
+
         Class<?> clazz = o.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
-        return Arrays.stream(fields)
+		id = ctx.registerObject(o);
+
+		String prefix = "{\"@id\" : " + id + ", ";
+
+        return prefix + Arrays.stream(fields)
                 .map(field -> {
                     field.setAccessible(true);
 
@@ -92,7 +103,7 @@ public class Jsonolizer {
                     }
 
                     return "\"" + field.getName() + "\": " + objToJsonField(value);
-                }).collect(Collectors.joining(", ", "{", "}"));
+                }).collect(Collectors.joining(", ", "", "}"));
     }
 
     private static boolean isSimpleObject(Object o) {

@@ -1,7 +1,6 @@
 package org.example;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,6 +12,7 @@ public class Main {
         example.string = new String[] {"str"};
         example.value = new int[] {42, 43};
         example.simple = s;
+        s.simple = example;
 
         Jsonolizer jsonlizer = new Jsonolizer();
         System.out.println(jsonlizer.objToJson(example));
