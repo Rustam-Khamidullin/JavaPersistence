@@ -1,10 +1,10 @@
 package org.example;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Jsonolizer {
@@ -106,10 +106,9 @@ public class Jsonolizer {
             return simpleObjectFromJson(json, clazz);
         }
         if (clazz.isArray()) {
-            //TODO json to array
-            return null;
+            return jsonToArray(json, clazz);
         }
-        return null; //TODO json to complex object
+        return jsonToComplexObject(json, clazz); //TODO json to complex object
     }
 
     private Object simpleObjectFromJson(String json, Class<?> clazz) {
@@ -145,6 +144,70 @@ public class Jsonolizer {
         }
         throw new IllegalArgumentException("Method \"simpleObjectFromJson\" can convert only simple objects");
     }
+
+    private Object jsonToArray(String json, Class<?> clazz) {
+        Class<?> componentType = clazz.getComponentType();
+        json = json.trim();
+        if (!json.startsWith("[") || !json.endsWith("]")) {
+            throw new IllegalArgumentException("Invalid JSON array: " + json);
+        }
+
+        json = json.substring(1, json.length() - 1).trim();
+
+        if (json.isEmpty()) {
+            return Array.newInstance(componentType, 0);
+        }
+        String[] elements = json.split(",");
+        Object array = Array.newInstance(componentType, elements.length);
+
+        for (int i = 0; i < elements.length; i++) {
+            Object element = jsonToObj(elements[i].trim(), componentType);
+            Array.set(array, i, element);
+        }
+
+        return array;
+    }
+
+    private Object jsonToComplexObject(String json, Class<?> clazz) {
+        try {
+            Object instance = getInstance(clazz);
+
+            json = json.trim();
+            if (!json.startsWith("{") || !json.endsWith("}")) {
+                throw new IllegalArgumentException("Can't convert json to complex object: " + json);
+            }
+            json = json.substring(1, json.length() - 1).trim();
+            if (json.isEmpty()) {
+                return instance;
+            }
+
+            JsonParser parser = new JsonParser();
+            Map<String, String> keyValues = parser.parseToKeyValue(json);
+
+            for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true);
+                if (keyValues.containsKey(field.getName())) {
+                    Object value = jsonToObj(keyValues.get(field.getName()), field.getType());
+                    field.set(instance, value);
+                }
+            }
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to deserialize JSON", e);
+        }
+    }
+
+    private static Object getInstance(Class<?> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors(); //try to find any constructors
+        if (constructors.length == 0) {
+            throw new RuntimeException("No constructors found for class " + clazz.getName());
+        }
+        Constructor<?> constructor = constructors[0];//bring first
+        constructor.setAccessible(true);
+        Object[] args = new Object[constructor.getParameterCount()];
+        return constructor.newInstance(args);
+    }
+
 
     public static void main(String[] args) {
         String[][] a = new String[][]{{"a"}, {"b", "c"}};
