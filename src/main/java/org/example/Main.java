@@ -15,11 +15,18 @@ public class Main {
 
         Jsonolizer jsonlizer = new Jsonolizer();
         System.out.println(jsonlizer.objToJson(example));
+        System.out.println(jsonlizer.objToJson(new Str("alskdjladj\"asdal\"kjsdlk")));
     }
 
     public static class User {
         public User user;
         public int age;
+    }
+    public static class Str {
+        public Str(String str) {
+            this.str = str;
+        }
+        public String str;
     }
 
 
