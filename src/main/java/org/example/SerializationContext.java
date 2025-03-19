@@ -12,14 +12,6 @@ public class SerializationContext {
 		sequences = new HashMap<>();
 	}
 
-	public Map<Class<?>, Map<Object, Long>> getSerializedObjects() {
-		return serializedObjects;
-	}
-
-	public Map<Class<?>, Long> getSequences() {
-		return sequences;
-	}
-
 	public long registerObject(Object o) {
 		Class<?> clazz = o.getClass();
 		serializedObjects.putIfAbsent(clazz, new HashMap<>());
