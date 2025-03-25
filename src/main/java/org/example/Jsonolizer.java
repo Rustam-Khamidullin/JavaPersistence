@@ -1,10 +1,14 @@
 package org.example;
 
+
+import org.example.filter_conditions.PredicateFactory;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Jsonolizer {
@@ -214,6 +218,10 @@ public class Jsonolizer {
     }
 
     private Object jsonToComplexObject(String json, Class<?> clazz) {
+        return jsonToComplexObject(json, clazz, PredicateFactory.createPredicateMoreThan("field1", 5));//заглушка, поменять
+    }
+
+    public Object jsonToComplexObject(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
         try {
             Object instance = getInstance(clazz);
 
@@ -228,6 +236,10 @@ public class Jsonolizer {
 
             JsonParser parser = new JsonParser();
             Map<String, String> keyValues = parser.parseToKeyValue(json);
+
+            if (!predicate.test(keyValues)) {
+                return null;
+            }
 
             for (Field field : clazz.getDeclaredFields()) {
                 field.setAccessible(true);

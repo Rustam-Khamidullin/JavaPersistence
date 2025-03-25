@@ -1,26 +1,51 @@
 package org.example;
 
+
+
+import org.example.filter_conditions.PredicateFactory;
+import org.example.filter_conditions.PredicateUtils;
+
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) {
-        Simple s = new Simple();
-        s.string = new String[] {"string", "string2"};
-        s.value = new int[] {43};
+        Test test = new Test(3, 3);
+        JsonParser parser = new JsonParser();
+        Jsonolizer jsonolizer = new Jsonolizer();
+        System.out.println(jsonolizer.objToJson(test));
+        String json = jsonolizer.objToJson(test);
+        jsonolizer.jsonToObj(json, Test.class);
 
-        Simple example = new Simple();
-        example.string = new String[] {"str"};
-        example.value = new int[] {42, 43};
-        example.simple = s;
-        s.simple = example;
+        // Пример карты с данными
+        Map<String, String> keyValues = new HashMap<>();
+        keyValues.put("field1", "10");
+        keyValues.put("field2", "3");
 
-        Jsonolizer jsonlizer = new Jsonolizer();
-        System.out.println(jsonlizer.objToJson(example));
-        System.out.println(jsonlizer.objToJson(s));
-        System.out.println(jsonlizer.objToJson(new Obj(15)));
-        System.out.println(jsonlizer.jsonToObj("{\"str\": \"st\\\"rin\"g\"}", Str.class));
-        System.out.println(jsonlizer.objToJson(new int[] {1,2,3}));
-        System.out.println(Arrays.toString((int[])jsonlizer.jsonToObj("[1, 2, 3]", int[].class)));
+        //Создаем предикат, который проверяет, больше ли значение поля "field1" чем 5
+        Predicate<Map<String, String>> predicate = PredicateFactory.createPredicateMoreThan("field1", 5);
+        Predicate<Map<String, String>> predicate2 = PredicateFactory.createPredicateMoreThan("field2", 5);
+
+
+        // Проверяем предикат
+        boolean result = predicate.test(keyValues);
+        System.out.println("Is field1 greater than 5? " + result); // true
+
+        System.out.println(jsonolizer.jsonToComplexObject(json, Test.class, predicate.and(predicate2)));
+    }
+
+    public static class Test {
+        public Test() {
+
+        }
+        public int field1;
+        public int field2;
+        public Test(int field1, int field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
     }
 
     public static class User {
