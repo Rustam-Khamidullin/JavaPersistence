@@ -108,7 +108,7 @@ public class Jsonolizer {
         if (clazz.isArray()) {
             return jsonToArray(json, clazz);
         }
-        return jsonToComplexObject(json, clazz); //TODO json to complex object
+        return jsonToComplexObject(json, clazz);
     }
 
     private Object simpleObjectFromJson(String json, Class<?> clazz) {
@@ -157,12 +157,46 @@ public class Jsonolizer {
         if (json.isEmpty()) {
             return Array.newInstance(componentType, 0);
         }
-        String[] elements = json.split(",");
-        Object array = Array.newInstance(componentType, elements.length);
 
-        for (int i = 0; i < elements.length; i++) {
-            Object element = jsonToObj(elements[i].trim(), componentType);
-            Array.set(array, i, element);
+        List<Object> elements = new ArrayList<>();
+        StringBuilder currentElement = new StringBuilder();
+        int braceCounter = 0; // для отслеживания вложенных объектов
+        boolean inQuotes = false; // для отслеживания строковых значений
+
+        for (int i = 0; i < json.length(); i++) {
+            char c = json.charAt(i);
+            if (c == '\"') {
+                inQuotes = !inQuotes; // переключаем состояние в кавычках
+            }
+            if (!inQuotes) {
+                if (c == '{') {
+                    braceCounter++;
+                } else if (c == '}') {
+                    braceCounter--;
+                }
+                if (c == '[') {
+                    braceCounter++;
+                } else if (c == ']') {
+                    braceCounter--;
+                }
+                if (c == ',' && braceCounter == 0) {
+                    // если мы находим запятую и не находимся внутри вложенных объектов или массива
+                    elements.add(jsonToObj(currentElement.toString().trim(), componentType));
+                    currentElement.setLength(0); // очищаем текущий элемент
+                    continue;
+                }
+            }
+            currentElement.append(c);
+        }
+
+        //последний элемент
+        if (!currentElement.isEmpty()) {
+            elements.add(jsonToObj(currentElement.toString().trim(), componentType));
+        }
+
+        Object array = Array.newInstance(componentType, elements.size());
+        for (int i = 0; i < elements.size(); i++) {
+            Array.set(array, i, elements.get(i));
         }
 
         return array;
