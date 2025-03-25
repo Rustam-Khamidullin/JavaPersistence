@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonolizerTest {
 	Jsonolizer jsonolizer;
+
 	@BeforeEach
 	void setUp() {
 		jsonolizer = new Jsonolizer();
@@ -21,14 +22,14 @@ public class JsonolizerTest {
 	@Test
 	public void primitiveTypes() {
 		Object[] primitiveTypesArray = new Object[8];
-		primitiveTypesArray[0] = 10;		// int
-		primitiveTypesArray[1] = 20.5;		// double
-		primitiveTypesArray[2] = 'A';		// char
-		primitiveTypesArray[3] = true;		// boolean
-		primitiveTypesArray[4] = (byte) 1;	// byte
-		primitiveTypesArray[5] = (short) 2;	// short
-		primitiveTypesArray[6] = 30L;		// long
-		primitiveTypesArray[7] = 40.0f;		// float
+		primitiveTypesArray[0] = 10;        // int
+		primitiveTypesArray[1] = 20.5;        // double
+		primitiveTypesArray[2] = 'A';        // char
+		primitiveTypesArray[3] = true;        // boolean
+		primitiveTypesArray[4] = (byte) 1;    // byte
+		primitiveTypesArray[5] = (short) 2;    // short
+		primitiveTypesArray[6] = 30L;        // long
+		primitiveTypesArray[7] = 40.0f;        // float
 
 		for (Object o : primitiveTypesArray) {
 			assertThrows(IllegalArgumentException.class, () -> jsonolizer.objToJson(o));
@@ -38,14 +39,14 @@ public class JsonolizerTest {
 	@Test
 	public void primitiveObjects() {
 		Object[] primitiveObjectsArray = new Object[8];
-		primitiveObjectsArray[0] = Integer.valueOf(10);		// Integer
-		primitiveObjectsArray[1] = Double.valueOf(20.5);		// Double
-		primitiveObjectsArray[2] = Character.valueOf('A');	// Char
-		primitiveObjectsArray[3] = Boolean.valueOf(true);	// Boolean
-		primitiveObjectsArray[4] = Byte.valueOf((byte) 1);		// Byte
-		primitiveObjectsArray[5] = Short.valueOf((short) 2);	// Short
-		primitiveObjectsArray[6] = Long.valueOf(30L);		// Long
-		primitiveObjectsArray[7] = Float.valueOf(40.0f);		// Float
+		primitiveObjectsArray[0] = Integer.valueOf(10);        // Integer
+		primitiveObjectsArray[1] = Double.valueOf(20.5);        // Double
+		primitiveObjectsArray[2] = Character.valueOf('A');    // Char
+		primitiveObjectsArray[3] = Boolean.valueOf(true);    // Boolean
+		primitiveObjectsArray[4] = Byte.valueOf((byte) 1);        // Byte
+		primitiveObjectsArray[5] = Short.valueOf((short) 2);    // Short
+		primitiveObjectsArray[6] = Long.valueOf(30L);        // Long
+		primitiveObjectsArray[7] = Float.valueOf(40.0f);        // Float
 
 		for (Object o : primitiveObjectsArray) {
 			assertThrows(IllegalArgumentException.class, () -> jsonolizer.objToJson(o));
@@ -71,13 +72,13 @@ public class JsonolizerTest {
 		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OnePrimitiveFieldClass(-1000)));
 		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OnePrimitiveFieldClass(0)));
 		//byte
-		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte)42)));
-		assertEquals("{\"val\": -100}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte)-100)));
-		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte)0)));
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte) 42)));
+		assertEquals("{\"val\": -100}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte) -100)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((byte) 0)));
 		//short
-		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short)42)));
-		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short)-1000)));
-		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short)0)));
+		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short) 42)));
+		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short) -1000)));
+		assertEquals("{\"val\": 0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((short) 0)));
 		//long
 		assertEquals("{\"val\": 42}", jsonolizer.objToJson(new OnePrimitiveFieldClass(42L)));
 		assertEquals("{\"val\": -1000}", jsonolizer.objToJson(new OnePrimitiveFieldClass(-1000L)));
@@ -91,9 +92,9 @@ public class JsonolizerTest {
 		assertEquals("{\"val\": 0.0}", jsonolizer.objToJson(new OnePrimitiveFieldClass(0.0)));
 		assertEquals("{\"val\": -22.1234567}", jsonolizer.objToJson(new OnePrimitiveFieldClass(-22.1234567)));
 		//float
-		assertEquals("{\"val\": 22.123}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float)22.123)));
-		assertEquals("{\"val\": 0.0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float)0.0)));
-		assertEquals("{\"val\": -22.123}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float)-22.123)));
+		assertEquals("{\"val\": 22.123}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float) 22.123)));
+		assertEquals("{\"val\": 0.0}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float) 0.0)));
+		assertEquals("{\"val\": -22.123}", jsonolizer.objToJson(new OnePrimitiveFieldClass((float) -22.123)));
 	}
 
 	@Test
@@ -116,7 +117,7 @@ public class JsonolizerTest {
 		 * На это я думаю забить можно, служебные символы не так нужно видеть зрительно,
 		 * в gson реализовано также как в этом тесте, что служебные символы через unicode \\u отображаются
 		 **/
-		assertEquals("{\"val\": \"\u0003\"}", jsonolizer.objToJson(new OnePrimitiveFieldClass((char)3)));
+		assertEquals("{\"val\": \"\u0003\"}", jsonolizer.objToJson(new OnePrimitiveFieldClass((char) 3)));
 	}
 
 	@Test
@@ -151,7 +152,7 @@ public class JsonolizerTest {
 	@Test
 	public void simpleObjectsFromJson() {
 		/*string*/
-        assertEquals("string", (String) jsonolizer.jsonToObj("\"string\"", String.class));
+		assertEquals("string", (String) jsonolizer.jsonToObj("\"string\"", String.class));
 		/*boolean*/
 		assertEquals(Boolean.valueOf(true), (Boolean) jsonolizer.jsonToObj("true", Boolean.class));
 		assertEquals(Boolean.valueOf(false), (Boolean) jsonolizer.jsonToObj("false", Boolean.class));
@@ -161,11 +162,11 @@ public class JsonolizerTest {
 		assertEquals('r', (Character) jsonolizer.jsonToObj("\"r\"", Character.class));
 		assertEquals('п', (Character) jsonolizer.jsonToObj("\"п\"", Character.class));
 		/*byte*/
-		assertEquals(Byte.valueOf((byte)5), (Byte) jsonolizer.jsonToObj("5", Byte.class));
-		assertEquals((byte)5, (byte) jsonolizer.jsonToObj("5", byte.class));
+		assertEquals(Byte.valueOf((byte) 5), (Byte) jsonolizer.jsonToObj("5", Byte.class));
+		assertEquals((byte) 5, (byte) jsonolizer.jsonToObj("5", byte.class));
 		/*short*/
-		assertEquals((short)5, (Short) jsonolizer.jsonToObj("5", Short.class));
-		assertEquals((short)5, (short) jsonolizer.jsonToObj("5", short.class));
+		assertEquals((short) 5, (Short) jsonolizer.jsonToObj("5", Short.class));
+		assertEquals((short) 5, (short) jsonolizer.jsonToObj("5", short.class));
 		/*integer*/
 		assertEquals(5, (Integer) jsonolizer.jsonToObj("5", Integer.class));
 		assertEquals(5, (int) jsonolizer.jsonToObj("5", int.class));
@@ -174,12 +175,12 @@ public class JsonolizerTest {
 		assertEquals(5, (long) jsonolizer.jsonToObj("5", long.class));
 		/*double*/
 		assertEquals(Double.valueOf(5.0), (Double) jsonolizer.jsonToObj("5.0", Double.class));
-		assertEquals((double)5.0, (double) jsonolizer.jsonToObj("5.0", double.class));
+		assertEquals((double) 5.0, (double) jsonolizer.jsonToObj("5.0", double.class));
 		/*float*/
 		assertEquals(Float.valueOf(5.0F), (Float) jsonolizer.jsonToObj("5.0", Float.class));
 		assertEquals(5.0F, (float) jsonolizer.jsonToObj("5.0", float.class));
 		/*void*/
-        assertNull(jsonolizer.jsonToObj("null", Void.class));
+		assertNull(jsonolizer.jsonToObj("null", Void.class));
 	}
 
 }
