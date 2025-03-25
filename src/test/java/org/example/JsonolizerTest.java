@@ -1,7 +1,13 @@
 package org.example;
 
+import org.example.classes.Empty;
+import org.example.classes.IdentityCycleClass;
+import org.example.classes.OneArrayFieldClass;
+import org.example.classes.OnePrimitiveFieldClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -183,4 +189,30 @@ public class JsonolizerTest {
 		assertNull(jsonolizer.jsonToObj("null", Void.class));
 	}
 
+	@Test
+	public void testRepeatableWithIdentity() {
+		IdentityCycleClass[] array = new IdentityCycleClass[3];
+
+		IdentityCycleClass o = new IdentityCycleClass();
+		o.value = 1;
+		o.cycle = null;
+
+		Arrays.fill(array, o);
+
+		assertEquals("[{\"@identity\" : 0,\"value\": 1, \"cycle\": null}, 0, 0]", jsonolizer.objToJson(array));
+	}
+
+	@Test
+	public void testCycleWithIdentity() {
+		IdentityCycleClass o1 = new IdentityCycleClass();
+		o1.value = 1;
+
+		IdentityCycleClass o2 = new IdentityCycleClass();
+		o2.value = 2;
+
+		o1.cycle = o2;
+		o2.cycle = o1;
+
+		assertEquals("{\"@identity\" : 0,\"value\": 1, \"cycle\": {\"@identity\" : 1,\"value\": 2, \"cycle\": 0}}", jsonolizer.objToJson(o1));
+	}
 }

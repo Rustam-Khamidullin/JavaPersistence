@@ -32,6 +32,7 @@ public class Main {
 		System.out.println(jsonolizer.jsonToComplexObject(json, Test.class, predicate.and(predicate2)));
 	}
 
+	@Identity(field = "identity")
 	public static class Test {
 		public Test() {
 

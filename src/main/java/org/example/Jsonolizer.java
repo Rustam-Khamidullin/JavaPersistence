@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Jsonolizer {
+	static private final String IDENTITY_FIELD = "@";
 	static private final Set<Class<?>> simpleClasses = new HashSet<>();
 	private SerializationContext ctx;
 
@@ -91,9 +92,19 @@ public class Jsonolizer {
 		Class<?> clazz = o.getClass();
 		Field[] fields = clazz.getDeclaredFields();
 
-		id = ctx.registerObject(o);
+		String prefix = "{";
+		if (clazz.isAnnotationPresent(Identity.class)) {
+			Identity annotation = clazz.getAnnotation(Identity.class);
 
-		String prefix = "{\"@id\" : " + id + ", ";
+			id = ctx.registerObject(o);
+
+			prefix += "\"" + IDENTITY_FIELD + annotation.field() + "\" : " + id;
+
+			if (fields.length != 0) {
+				prefix += ",";
+			}
+
+		}
 
 		return prefix + Arrays.stream(fields)
 				.map(field -> {
@@ -263,12 +274,5 @@ public class Jsonolizer {
 		constructor.setAccessible(true);
 		Object[] args = new Object[constructor.getParameterCount()];
 		return constructor.newInstance(args);
-	}
-
-
-	public static void main(String[] args) {
-		String[][] a = new String[][]{{"a"}, {"b", "c"}};
-
-		System.out.println(Arrays.deepToString(a));
 	}
 }

@@ -1,9 +1,9 @@
-package org.example;
+package org.example.classes;
 
 public class OneArrayFieldClass {
 	Object[] arr;
 
-	OneArrayFieldClass(Object[] arr) {
+	public OneArrayFieldClass(Object[] arr) {
 		this.arr = arr;
 	}
 }
