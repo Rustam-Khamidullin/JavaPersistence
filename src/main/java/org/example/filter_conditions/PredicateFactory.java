@@ -16,12 +16,30 @@ public class PredicateFactory {
 					throw new RuntimeException("Value for field '" + fieldName + "' is not a valid integer", e);
 				}
 			}
-			return false; // Если значение отсутствует, возвращаем false
+			return true; // Если значение отсутствует, возвращаем true
 		};
 	}
-	public static Predicate<Map<String, String>> createPredicateAlwaysTrue() {
+
+	public static Predicate<Map<String, String>> createPredicateLessThan(String fieldName, int threshold) {
 		return keyValues -> {
-			return true;
+			String valueStr = keyValues.get(fieldName);
+			if (valueStr != null) {
+				try {
+					int value = Integer.parseInt(valueStr);
+					return value < threshold;
+				} catch (NumberFormatException e) {
+					throw new RuntimeException("Value for field '" + fieldName + "' is not a valid integer", e);
+				}
+			}
+			return true; // Если значение отсутствует, возвращаем true
 		};
+	}
+
+	public static Predicate<Map<String, String>> createPredicateAlwaysTrue() {
+		return _ -> true;
+	}
+
+	public static Predicate<Map<String, String>> createPredicateAlwaysFalse() {
+		return _ -> false;
 	}
 }

@@ -13,21 +13,12 @@ import java.util.stream.Collectors;
 
 public class Jsonolizer {
 	static private final String IDENTITY_FIELD = "@";
-	static private final Set<Class<?>> simpleClasses = new HashSet<>();
 	private SerializationContext ctx;
-
-	static {
-		simpleClasses.add(Boolean.class);
-		simpleClasses.add(Character.class);
-		simpleClasses.add(Byte.class);
-		simpleClasses.add(Short.class);
-		simpleClasses.add(Integer.class);
-		simpleClasses.add(Long.class);
-		simpleClasses.add(Float.class);
-		simpleClasses.add(Double.class);
-		simpleClasses.add(Void.class);
-		simpleClasses.add(String.class);
-	}
+	static private final Set<Class<?>> simpleClasses = new HashSet<>(Arrays.asList(
+			Boolean.class, Character.class, Byte.class, Short.class,
+			Integer.class, Long.class, Float.class, Double.class,
+			String.class, Void.class
+	));
 
 	public String objToJson(Object o) {
 		if (o == null || isSimpleObject(o)) {
@@ -127,6 +118,11 @@ public class Jsonolizer {
 	}
 
 	/// /////////
+	//using without filtering
+	public Object jsonToObj(String json, Class<?> clazz) {
+		return jsonToObj(json, clazz, PredicateFactory.createPredicateAlwaysTrue());
+	}
+
 	//for filtering
 	public Object jsonToObj(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
 		if (simpleClasses.contains(clazz) || clazz.isPrimitive()) {
@@ -138,46 +134,23 @@ public class Jsonolizer {
 		return jsonToComplexObject(json, clazz, predicate);
 	}
 
-	//using without filtering
-	public Object jsonToObj(String json, Class<?> clazz) {
-		return jsonToObj(json, clazz, PredicateFactory.createPredicateAlwaysTrue());
-	}
-
 	private Object simpleObjectFromJson(String json, Class<?> clazz) {
-		if (clazz == String.class) {
-			return json.substring(1, json.length() - 1); //bring string without "
-		}
-		if (clazz == Boolean.class || clazz == boolean.class) {
-			return Boolean.parseBoolean(json);
-		}
-		if (clazz == Character.class || clazz == char.class) {
-			return json.charAt(1);
-		}
-		if (clazz == Byte.class || clazz == byte.class) {
-			return Byte.parseByte(json);
-		}
-		if (clazz == Short.class || clazz == short.class) {
-			return Short.parseShort(json);
-		}
-		if (clazz == Integer.class || clazz == int.class) {
-			return Integer.parseInt(json);
-		}
-		if (clazz == Long.class || clazz == long.class) {
-			return Long.parseLong(json);
-		}
-		if (clazz == Float.class || clazz == float.class) {
-			return Float.parseFloat(json);
-		}
-		if (clazz == Double.class || clazz == double.class) {
-			return Double.parseDouble(json);
-		}
-		if (clazz == Void.class) {
-			return null;
-		}
-		throw new IllegalArgumentException("Method \"simpleObjectFromJson\" can convert only simple objects");
-	}
+		return switch (clazz.getSimpleName()) {
+			case "String" -> json.substring(1, json.length() - 1);
+			case "Boolean", "boolean" -> Boolean.parseBoolean(json);
+			case "Character", "char" -> json.charAt(1);
+			case "Byte", "byte" -> Byte.parseByte(json);
+			case "Short", "short" -> Short.parseShort(json);
+			case "Integer", "int" -> Integer.parseInt(json);
+			case "Long", "long" -> Long.parseLong(json);
+			case "Float", "float" -> Float.parseFloat(json);
+			case "Double", "double" -> Double.parseDouble(json);
+			case "Void" -> null;
+			default -> throw new IllegalArgumentException("Method \"simpleObjectFromJson\" can convert only simple objects");
+		};
+    }
 
-	public Object jsonToArray(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
+	private Object jsonToArray(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
 		Class<?> componentType = clazz.getComponentType();
 		json = json.trim();
 		if (!json.startsWith("[") || !json.endsWith("]")) {
@@ -213,7 +186,10 @@ public class Jsonolizer {
 				}
 				if (c == ',' && braceCounter == 0) {
 					// если мы находим запятую и не находимся внутри вложенных объектов или массива
-					elements.add(jsonToObj(currentElement.toString().trim(), componentType, predicate));
+					Object obj = jsonToObj(currentElement.toString().trim(), componentType, predicate);
+					if (obj != null) {
+						elements.add(obj);
+					}
 					currentElement.setLength(0); // очищаем текущий элемент
 					continue;
 				}
@@ -223,7 +199,10 @@ public class Jsonolizer {
 
 		//последний элемент
 		if (!currentElement.isEmpty()) {
-			elements.add(jsonToObj(currentElement.toString().trim(), componentType, predicate));
+			Object obj = jsonToObj(currentElement.toString().trim(), componentType, predicate);
+			if (obj != null) {
+				elements.add(obj);
+			}
 		}
 
 		Object array = Array.newInstance(componentType, elements.size());
