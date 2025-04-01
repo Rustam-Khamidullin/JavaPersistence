@@ -138,6 +138,51 @@ public class JsonToObjTest {
         assertEquals(2, clazz.clazz.field);
     }
 
+    @Test
+    public void testCycleWithIdentityDeserialization() {
+        Jsonolizer jsonolizer = new Jsonolizer();
+
+        IdentityCycleClass o1 = new IdentityCycleClass();
+        o1.value = 1;
+
+        IdentityCycleClass o2 = new IdentityCycleClass();
+        o2.value = 2;
+
+        o1.cycle = o2;
+        o2.cycle = o1;
+
+        String json = jsonolizer.objToJson(o1);
+
+        IdentityCycleClass o1Deserialized = (IdentityCycleClass) jsonolizer.jsonToObj(json, IdentityCycleClass.class);
+
+        assertEquals(1, o1Deserialized.value);
+        assertEquals(2, o1Deserialized.cycle.value);
+        assertEquals(1, o1Deserialized.cycle.cycle.value);
+    }
+
+    @Test
+    public void testRepeatableWithIdentityDeserialization() {
+        Jsonolizer jsonolizer = new Jsonolizer();
+
+        IdentityCycleClass[] array = new IdentityCycleClass[3];
+
+        IdentityCycleClass o = new IdentityCycleClass();
+        o.value = 1;
+        o.cycle = null;
+
+        Arrays.fill(array, o);
+
+        String json = jsonolizer.objToJson(array);
+
+        IdentityCycleClass[] deserialized = (IdentityCycleClass[]) jsonolizer.jsonToObj(json, IdentityCycleClass[].class);
+
+        assertEquals(3, deserialized.length);
+        for (IdentityCycleClass cycleClass : deserialized) {
+            assertEquals(1, cycleClass.value);
+            assertEquals(null, cycleClass.cycle);
+        }
+    }
+
     public static void main(String[] args) {
         Jsonolizer jsonolizer = new Jsonolizer();
         Class1 clazz1 = new Class1(new Class2(2));

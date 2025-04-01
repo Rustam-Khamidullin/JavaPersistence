@@ -9,11 +9,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Jsonolizer {
 	static private final String IDENTITY_FIELD = "@";
-	private SerializationContext ctx;
+	private JsonParser jsonParser = new JsonParser();
+	private SerializationContext serializationContext;
+	private DeserializationContext deserializationContext;
 	static private final Set<Class<?>> simpleClasses = new HashSet<>(Arrays.asList(
 			Boolean.class, Character.class, Byte.class, Short.class,
 			Integer.class, Long.class, Float.class, Double.class,
@@ -25,7 +28,8 @@ public class Jsonolizer {
 			throw new IllegalArgumentException("Can't serialize simple object.");
 		}
 
-		ctx = new SerializationContext();
+		serializationContext = new SerializationContext();
+		deserializationContext = new DeserializationContext();
 		return objToJsonField(o);
 	}
 
@@ -75,7 +79,7 @@ public class Jsonolizer {
 	}
 
 	private String realObjToJson(Object o) {
-		Long id = ctx.getId(o);
+		Long id = serializationContext.getId(o);
 		if (id != null) {
 			return id.toString();
 		}
@@ -87,14 +91,13 @@ public class Jsonolizer {
 		if (clazz.isAnnotationPresent(Identity.class)) {
 			Identity annotation = clazz.getAnnotation(Identity.class);
 
-			id = ctx.registerObject(o);
+			id = serializationContext.registerObject(o);
 
 			prefix += "\"" + IDENTITY_FIELD + annotation.field() + "\" : " + id;
 
 			if (fields.length != 0) {
 				prefix += ",";
 			}
-
 		}
 
 		return prefix + Arrays.stream(fields)
@@ -214,20 +217,45 @@ public class Jsonolizer {
 	}
 
 	public Object jsonToComplexObject(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
+		if (Objects.equals(json, "null")) {
+			return null;
+		}
+
 		try {
-			Object instance = getInstance(clazz);
+			boolean isIdentity = clazz.isAnnotationPresent(Identity.class);
+
+			if (isIdentity) {
+				try {
+					long id = Long.parseLong(json);
+
+					return deserializationContext.getObject(id);
+				} catch (NumberFormatException ignored) {
+				}
+			}
 
 			json = json.trim();
-			if (!json.startsWith("{") || !json.endsWith("}")) {
+			if ((!json.startsWith("{") || !json.endsWith("}"))) {
 				throw new IllegalArgumentException("Can't convert json to complex object: " + json);
 			}
+
+			Object instance = getInstance(clazz);
+
 			json = json.substring(1, json.length() - 1).trim();
+			Map<String, String> keyValues = jsonParser.parseToKeyValue(json);
+
+			if (isIdentity) {
+				Identity annotation = clazz.getAnnotation(Identity.class);
+
+				String stringId = keyValues.get(IDENTITY_FIELD + annotation.field());
+
+				long id = Long.parseLong(stringId);
+
+				deserializationContext.register(instance, id);
+			}
+
 			if (json.isEmpty()) {
 				return instance;
 			}
-
-			JsonParser parser = new JsonParser();
-			Map<String, String> keyValues = parser.parseToKeyValue(json);
 
 			if (!predicate.test(keyValues)) {
 				return null;
