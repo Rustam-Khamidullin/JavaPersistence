@@ -19,4 +19,9 @@ public class PredicateFactory {
 			return false; // Если значение отсутствует, возвращаем false
 		};
 	}
+	public static Predicate<Map<String, String>> createPredicateAlwaysTrue() {
+		return keyValues -> {
+			return true;
+		};
+	}
 }

@@ -127,14 +127,20 @@ public class Jsonolizer {
 	}
 
 	/// /////////
-	public Object jsonToObj(String json, Class<?> clazz) {
+	//for filtering
+	public Object jsonToObj(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
 		if (simpleClasses.contains(clazz) || clazz.isPrimitive()) {
 			return simpleObjectFromJson(json, clazz);
 		}
 		if (clazz.isArray()) {
-			return jsonToArray(json, clazz);
+			return jsonToArray(json, clazz, predicate);
 		}
-		return jsonToComplexObject(json, clazz);
+		return jsonToComplexObject(json, clazz, predicate);
+	}
+
+	//using without filtering
+	public Object jsonToObj(String json, Class<?> clazz) {
+		return jsonToObj(json, clazz, PredicateFactory.createPredicateAlwaysTrue());
 	}
 
 	private Object simpleObjectFromJson(String json, Class<?> clazz) {
@@ -171,7 +177,7 @@ public class Jsonolizer {
 		throw new IllegalArgumentException("Method \"simpleObjectFromJson\" can convert only simple objects");
 	}
 
-	private Object jsonToArray(String json, Class<?> clazz) {
+	public Object jsonToArray(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
 		Class<?> componentType = clazz.getComponentType();
 		json = json.trim();
 		if (!json.startsWith("[") || !json.endsWith("]")) {
@@ -207,7 +213,7 @@ public class Jsonolizer {
 				}
 				if (c == ',' && braceCounter == 0) {
 					// если мы находим запятую и не находимся внутри вложенных объектов или массива
-					elements.add(jsonToObj(currentElement.toString().trim(), componentType));
+					elements.add(jsonToObj(currentElement.toString().trim(), componentType, predicate));
 					currentElement.setLength(0); // очищаем текущий элемент
 					continue;
 				}
@@ -217,7 +223,7 @@ public class Jsonolizer {
 
 		//последний элемент
 		if (!currentElement.isEmpty()) {
-			elements.add(jsonToObj(currentElement.toString().trim(), componentType));
+			elements.add(jsonToObj(currentElement.toString().trim(), componentType, predicate));
 		}
 
 		Object array = Array.newInstance(componentType, elements.size());
@@ -226,10 +232,6 @@ public class Jsonolizer {
 		}
 
 		return array;
-	}
-
-	private Object jsonToComplexObject(String json, Class<?> clazz) {
-		return jsonToComplexObject(json, clazz, PredicateFactory.createPredicateMoreThan("field1", 5));//заглушка, поменять
 	}
 
 	public Object jsonToComplexObject(String json, Class<?> clazz, Predicate<Map<String, String>> predicate) {
