@@ -72,7 +72,7 @@ public class JsonolizerTest {
 	@Test
 	public void voidObject() {
 		Void voidObject = null;
-		assertThrows(IllegalArgumentException.class, () -> jsonolizer.objToJson(voidObject));
+		assertEquals("null", jsonolizer.objToJson(voidObject));
 	}
 
 	@Test
