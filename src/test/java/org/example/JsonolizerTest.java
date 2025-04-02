@@ -109,7 +109,6 @@ public class JsonolizerTest {
 		assertEquals("{\"val\": false}", jsonolizer.objToJson(new OnePrimitiveFieldClass(false)));
 	}
 
-	//TODO fix that
 	@Test
 	public void stringFields() {
 		assertEquals("{\"val\": \"string\"}", jsonolizer.objToJson(new OnePrimitiveFieldClass("string")));
