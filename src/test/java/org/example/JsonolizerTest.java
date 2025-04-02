@@ -59,7 +59,6 @@ public class JsonolizerTest {
 		}
 	}
 
-	//TODO: fix that
 	@Test
 	public void voidObject() {
 		Void voidObject = null;
