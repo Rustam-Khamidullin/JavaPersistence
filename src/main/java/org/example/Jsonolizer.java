@@ -24,10 +24,6 @@ public class Jsonolizer {
 	));
 
 	public String objToJson(Object o) {
-		if (o == null || isSimpleObject(o)) {
-			throw new IllegalArgumentException("Can't serialize simple object.");
-		}
-
 		serializationContext = new SerializationContext();
 		deserializationContext = new DeserializationContext();
 		return objToJsonField(o);

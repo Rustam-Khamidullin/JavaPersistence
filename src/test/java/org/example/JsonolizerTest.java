@@ -37,9 +37,14 @@ public class JsonolizerTest {
 		primitiveTypesArray[6] = 30L;        // long
 		primitiveTypesArray[7] = 40.0f;        // float
 
-		for (Object o : primitiveTypesArray) {
-			assertThrows(IllegalArgumentException.class, () -> jsonolizer.objToJson(o));
-		}
+		assertEquals("10", jsonolizer.objToJson(primitiveTypesArray[0]));
+		assertEquals("20.5", jsonolizer.objToJson(primitiveTypesArray[1]));
+		assertEquals("\"A\"", jsonolizer.objToJson(primitiveTypesArray[2]));
+		assertEquals("true", jsonolizer.objToJson(primitiveTypesArray[3]));
+		assertEquals("1", jsonolizer.objToJson(primitiveTypesArray[4]));
+		assertEquals("2", jsonolizer.objToJson(primitiveTypesArray[5]));
+		assertEquals("30", jsonolizer.objToJson(primitiveTypesArray[6]));
+		assertEquals("40.0", jsonolizer.objToJson(primitiveTypesArray[7]));
 	}
 
 	@Test
@@ -54,9 +59,14 @@ public class JsonolizerTest {
 		primitiveObjectsArray[6] = Long.valueOf(30L);        // Long
 		primitiveObjectsArray[7] = Float.valueOf(40.0f);        // Float
 
-		for (Object o : primitiveObjectsArray) {
-			assertThrows(IllegalArgumentException.class, () -> jsonolizer.objToJson(o));
-		}
+		assertEquals("10", jsonolizer.objToJson(primitiveObjectsArray[0]));
+		assertEquals("20.5", jsonolizer.objToJson(primitiveObjectsArray[1]));
+		assertEquals("\"A\"", jsonolizer.objToJson(primitiveObjectsArray[2]));
+		assertEquals("true", jsonolizer.objToJson(primitiveObjectsArray[3]));
+		assertEquals("1", jsonolizer.objToJson(primitiveObjectsArray[4]));
+		assertEquals("2", jsonolizer.objToJson(primitiveObjectsArray[5]));
+		assertEquals("30", jsonolizer.objToJson(primitiveObjectsArray[6]));
+		assertEquals("40.0", jsonolizer.objToJson(primitiveObjectsArray[7]));
 	}
 
 	@Test
