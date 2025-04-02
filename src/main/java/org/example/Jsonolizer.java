@@ -228,7 +228,7 @@ public class Jsonolizer {
 				try {
 					long id = Long.parseLong(json);
 
-					return deserializationContext.getObject(id);
+					return deserializationContext.getObject(clazz, id);
 				} catch (NumberFormatException ignored) {
 				}
 			}
